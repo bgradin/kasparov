@@ -1,53 +1,41 @@
-import express, { Request, Response } from "express";
-import { InteractionResponseType, InteractionType } from "discord-interactions";
+import Discord from "discord.js";
+import client from "./client";
 import Function from "./functions/function";
-import { verifyDiscordRequest } from "./utils";
-import { installCommands } from "./commands";
-
-const PORT = process.env.PORT || 8080;
+import { COMMAND_PREFIX, getCommand } from "./commands";
 
 export default class Server {
-  private _server = express();
   private _functions: Function[] = [];
+  private _guilds: Discord.Guild[];
 
   constructor() {
-    this._server.use(
-      express.json({
-        verify: verifyDiscordRequest(process.env.PUBLIC_KEY),
-      })
-    );
-    this._server.get("/", (req, res) => {
-      return res.send("OK");
+    client.on("guildCreate", (guild) => {
+      this._guilds.push(guild);
     });
-    this._server.post("/interactions", this.handleInteraction.bind(this));
-  }
 
-  handleInteraction(req: Request, res: Response) {
-    const { type, id, data } = req.body;
+    client.on("messageCreate", (message) => {
+      if (message.author.bot) {
+        return;
+      }
 
-    if (type === InteractionType.PING) {
-      return res.send({ type: InteractionResponseType.PONG });
-    }
-
-    const func = this._functions.find((x) => x.canHandle(type, data));
-    if (func) {
-      res.send(func.handle(type, data));
-    } else {
-      res.status(400).send();
-    }
+      const command = getCommand(message);
+      const func = this._functions.find((x) => x.canExecute(command));
+      if (func) {
+        func.execute(command);
+      }
+    });
   }
 
   async register(func: Function) {
-    await installCommands(
-      process.env.APP_ID,
-      process.env.GUILD_ID,
-      func.getCommands()
-    );
-
     this._functions.push(func);
   }
 
-  start() {
-    this._server.listen(PORT);
+  async start() {
+    await client.login(process.env.BOT_TOKEN);
+
+    const guilds = await client.guilds.fetch();
+    this._guilds = [];
+    for (let i = 0; i < guilds.size; i++) {
+      this._guilds.push(await guilds.at(i).fetch());
+    }
   }
 }

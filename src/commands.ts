@@ -1,73 +1,26 @@
-import { makeDiscordRequest } from "./utils";
+import Discord from "discord.js";
 
-export interface CommandOptionChoice {
-  name: string;
-  value: string;
-}
-
-export interface CommandOption {
-  name: string;
-  description: string;
-  type: number;
-  choices: CommandOptionChoice[];
-}
+export const COMMAND_PREFIX = "!";
+export const DEFAULT_COMMAND_TYPE = "simple";
 
 export interface Command {
-  name: string;
-  description: string;
-  type: number;
-  options?: CommandOption[];
+  type: string;
+  args: string[];
+  message: Discord.Message;
 }
 
-async function installCommand(
-  appId: string,
-  guildId: string,
-  command: Command
-) {
-  const endpoint = `applications/${appId}/guilds/${guildId}/commands`;
-
-  try {
-    await makeDiscordRequest(endpoint, {
-      method: "POST",
-      body: JSON.stringify(command),
-    });
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-async function installCommandIfNecessary(
-  appId: string,
-  guildId: string,
-  command: Command
-) {
-  const endpoint = `applications/${appId}/guilds/${guildId}/commands`;
-
-  try {
-    const res = await makeDiscordRequest(endpoint, { method: "GET" });
-    const data = (await res.json()) as Command[];
-
-    if (data) {
-      const installedNames = data.map((c) => c.name);
-      if (!installedNames.includes(command.name)) {
-        await installCommand(appId, guildId, command);
-      }
-    }
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-export async function installCommands(
-  appId: string,
-  guildId: string,
-  commands: Command[]
-) {
-  if (!appId || !guildId || appId === "" || guildId === "") {
-    return;
-  }
-
-  for (let i = 0; i < commands.length; i++) {
-    await installCommandIfNecessary(appId, guildId, commands[i]);
-  }
+export function getCommand(message: Discord.Message): Command {
+  const startsWithCommandPrefix = message.content.startsWith(COMMAND_PREFIX);
+  const body = startsWithCommandPrefix
+    ? message.content.slice(COMMAND_PREFIX.length)
+    : message.content;
+  const args = body.split(" ");
+  const type = startsWithCommandPrefix
+    ? args.shift().toLowerCase()
+    : DEFAULT_COMMAND_TYPE;
+  return {
+    type,
+    args,
+    message,
+  };
 }
