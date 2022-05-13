@@ -6,6 +6,8 @@ export interface HandlerInfo {
 }
 
 export abstract class Handler {
+  async initialize() {} // Virtual
+
   findCommand(message: Message): Command {
     return this.getInfo().commands.find((command) =>
       command.canExecute(message)

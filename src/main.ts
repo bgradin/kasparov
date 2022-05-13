@@ -34,6 +34,8 @@ async function run() {
   const server = new Server();
   await server.start();
   await registerFunctions(server);
+
+  console.log("Server started!");
 }
 
 run();

@@ -11,16 +11,12 @@ export interface PlayersInfo {
   black: PlayerInfo;
 }
 
-export interface MessageLocator {
-  channelId: string;
-  messageId: string;
-}
-
 export interface GameSaveState {
   fen: string;
   players: PlayersInfo;
   currentTurn: Side;
-  previousMessage: MessageLocator;
+  channelId: string;
+  previousMessageId: string;
 }
 
 export interface GameInfo {
@@ -28,6 +24,7 @@ export interface GameInfo {
   previousMessage?: Message;
   players: PlayersInfo;
   currentTurn: Side;
+  filePath?: string;
 }
 
 export interface GameStore {

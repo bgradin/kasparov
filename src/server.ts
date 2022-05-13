@@ -28,6 +28,7 @@ export default class Server {
   }
 
   async register(handler: Handler) {
+    await handler.initialize();
     this._handlers.push(handler);
   }
 

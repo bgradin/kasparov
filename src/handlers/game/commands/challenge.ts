@@ -5,11 +5,17 @@ import { Command } from "../../../commands";
 import { Message } from "../../../messages";
 import { isThreadChannel, Regex } from "../../../utils";
 import { SIDES, SIDE_RANDOM, SIDE_WHITE, SIDE_BLACK } from "../sides";
-import { GameInfo, GameStore, PlayersInfo } from "../types";
+import { GameInfo, GameStore, PlayerInfo, PlayersInfo } from "../types";
 
 interface Context {
   games: GameStore;
   sendState: (thread: ThreadChannel, info: GameInfo) => Promise<void>;
+}
+
+function getPlayerInfo(user: User): PlayerInfo {
+  return {
+    id: user.id,
+  };
 }
 
 function getPlayersForSideChoice(
@@ -25,12 +31,12 @@ function getPlayersForSideChoice(
       : side;
   return resolvedSide === SIDE_WHITE
     ? {
-        white: challenger,
-        black: opponent,
+        white: getPlayerInfo(challenger),
+        black: getPlayerInfo(opponent),
       }
     : {
-        white: opponent,
-        black: challenger,
+        white: getPlayerInfo(opponent),
+        black: getPlayerInfo(challenger),
       };
 }
 
