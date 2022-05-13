@@ -7,7 +7,9 @@
   "author": "Brian Gradin <brian@toolhouse.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node --nolazy -r ts-node/register/transpile-only src/main.ts"
+    "start": "node --nolazy -r ts-node/register/transpile-only src/main.ts",
+    "restart": "node --nolazy -r ts-node/register/transpile-only src/server-admin/restart.ts",
+    "kill": "node --nolazy -r ts-node/register/transpile-only src/server-admin/kill.ts"
   },
   "dependencies": {
     "@types/node": "^17.0.32",

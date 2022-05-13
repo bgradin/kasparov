@@ -1,0 +1,26 @@
+language: node_js
+node_js:
+  - "17"
+
+sudo: required
+
+cache: yarn
+
+jobs:
+  include:
+    - stage: build
+      script:
+        - yarn
+      before_deploy: sudo apt-get update && sudo apt-get install -y sshpass
+      deploy:
+        provider: script
+        skip_cleanup: true
+        script:
+          sshpass -p ${SFTP_PASSWORD} ssh -p 2345 -oStrictHostKeyChecking=no ${SFTP_USER}@${SFTP_HOST} "mkdir -p /var/www/kasparov" &&
+          sshpass -p ${SFTP_PASSWORD} scp -P 2345 -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null * ${SFTP_USER}@${SFTP_HOST}:/var/www/kasparov &&
+          sshpass -p ${SFTP_PASSWORD} ssh -p 2345 -oStrictHostKeyChecking=no ${SFTP_USER}@${SFTP_HOST} "cd /var/www/kasparov && yarn && yarn restart"
+        on:
+          tags: true
+
+stages:
+  - build

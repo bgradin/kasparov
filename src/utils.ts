@@ -1,4 +1,6 @@
+import fs from "fs";
 import { If, GuildTextBasedChannel, TextBasedChannel } from "discord.js";
+import { promisify } from "util";
 
 export const ChannelTypes = {
   GUILD: ["GUILD_TEXT", "GUILD_NEWS"],
@@ -30,3 +32,8 @@ export function alphabeticallyBy<T>(
     return keyA < keyB ? -1 : keyA > keyB ? 1 : 0;
   };
 }
+
+export const readdir = promisify(fs.readdir);
+export const readfile = promisify(fs.readFile);
+export const rm = promisify(fs.rm);
+export const writefile = promisify(fs.writeFile);

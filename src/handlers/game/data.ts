@@ -4,6 +4,7 @@ import { nanoid } from "nanoid";
 import { GameInfo, GameSaveState, GameStore } from "./types";
 import { Chess } from "chess.ts";
 import { getThreadMessage } from "../../client";
+import { readdir, readfile, rm, writefile } from "../../utils";
 
 const DATA_DIRECTORY = path.join(process.cwd(), ".data");
 fs.mkdirSync(DATA_DIRECTORY, { recursive: true });
@@ -13,39 +14,21 @@ function getUniqueFilePath() {
 }
 
 export async function save(info: GameInfo) {
-  return new Promise((resolve) => {
-    if (!info.previousMessage) {
-      throw new Error("Cannot save game info without channel info.");
-    }
+  if (!info.previousMessage) {
+    throw new Error("Cannot save game info without channel info.");
+  }
 
-    const saveState = {
-      fen: info.chess.fen(),
-      players: info.players,
-      currentTurn: info.currentTurn,
-      channelId: info.previousMessage.channel.id,
-      previousMessageId: info.previousMessage.id,
-    };
+  const saveState = {
+    fen: info.chess.fen(),
+    players: info.players,
+    currentTurn: info.currentTurn,
+    channelId: info.previousMessage.channel.id,
+    previousMessageId: info.previousMessage.id,
+  };
 
-    info.filePath = info.filePath || getUniqueFilePath();
+  info.filePath = info.filePath || getUniqueFilePath();
 
-    fs.writeFile(info.filePath, JSON.stringify(saveState), {}, resolve);
-  });
-}
-
-async function readdir(directory: string): Promise<string[] | Buffer[]> {
-  return new Promise((resolve) => {
-    fs.readdir(directory, {}, (err, files) => {
-      resolve(files);
-    });
-  });
-}
-
-async function readFile(path: string): Promise<Buffer> {
-  return new Promise((resolve) => {
-    fs.readFile(path, {}, (err, data) => {
-      resolve(data);
-    });
-  });
+  await writefile(info.filePath, JSON.stringify(saveState), {});
 }
 
 export async function load(): Promise<GameStore> {
@@ -54,7 +37,7 @@ export async function load(): Promise<GameStore> {
   for (let i = 0; i < files.length; i++) {
     if (typeof files[i] === "string") {
       const filePath = path.join(DATA_DIRECTORY, files[i] as string);
-      const buffer = await readFile(filePath);
+      const buffer = await readfile(filePath);
       if (!buffer) {
         console.error(`Could not load ${filePath}`);
         continue;
@@ -75,7 +58,7 @@ export async function load(): Promise<GameStore> {
         console.log(
           `Could not load thread or message for ${filePath}. Deleting...`
         );
-        fs.rmSync(filePath);
+        await rm(filePath);
         continue;
       }
 
