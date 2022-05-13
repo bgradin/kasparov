@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/node": "^17.0.32",
     "chess.ts": "^0.16.2",
+    "chess-image-generator": "1.0.9",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.1",
     "node-fetch": "2.6.1",
