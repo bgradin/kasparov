@@ -1,11 +1,11 @@
-import Discord from "discord.js";
-import client from "./client";
-import Function from "./functions/function";
-import { COMMAND_PREFIX, getCommand } from "./commands";
+import { Guild } from "discord.js";
+import { client } from "./client";
+import { Handler } from "./handlers/handler";
+import { parse } from "./messages";
 
 export default class Server {
-  private _functions: Function[] = [];
-  private _guilds: Discord.Guild[];
+  private _handlers: Handler[] = [];
+  private _guilds: Guild[];
 
   constructor() {
     client.on("guildCreate", (guild) => {
@@ -17,16 +17,18 @@ export default class Server {
         return;
       }
 
-      const command = getCommand(message);
-      const func = this._functions.find((x) => x.canExecute(command));
-      if (func) {
-        func.execute(command);
+      const parsedMessage = parse(message);
+      const command = this._handlers
+        .map((x) => x.findCommand(parsedMessage))
+        .find((x) => !!x);
+      if (command) {
+        command.execute(parsedMessage);
       }
     });
   }
 
-  async register(func: Function) {
-    this._functions.push(func);
+  async register(handler: Handler) {
+    this._handlers.push(handler);
   }
 
   async start() {

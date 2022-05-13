@@ -1,6 +1,6 @@
 import "dotenv/config";
+import { Handlers } from "./config";
 
-import GameFunction from "./functions/game";
 import Server from "./server";
 
 function checkEnvironmentValidity(): boolean {
@@ -23,9 +23,17 @@ if (!checkEnvironmentValidity()) {
   throw new Error("Environment is not configured!");
 }
 
-async function registerFunctions() {
-  await server.register(new GameFunction());
+async function registerFunctions(server: Server) {
+  const handlers = Handlers.ALL;
+  for (let i = 0; i < handlers.length; i++) {
+    await server.register(handlers[i]);
+  }
 }
 
-const server = new Server();
-server.start().then(registerFunctions);
+async function run() {
+  const server = new Server();
+  await server.start();
+  await registerFunctions(server);
+}
+
+run();

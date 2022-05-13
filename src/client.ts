@@ -5,6 +5,12 @@ const INTENTS: BitFieldResolvable<IntentsString, number> = [
   "GUILD_MESSAGES",
 ];
 
-const client = new Discord.Client({ intents: INTENTS });
+export const client = new Discord.Client({ intents: INTENTS });
 
-export default client;
+export async function getUser(userId: string): Promise<Discord.User> {
+  try {
+    return await client.users.fetch(userId);
+  } catch (err) {
+    debugger;
+  }
+}
