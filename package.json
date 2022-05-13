@@ -7,7 +7,7 @@
   "author": "Brian Gradin <brian@toolhouse.com>",
   "license": "MIT",
   "scripts": {
-    "start": "npx ts-node src/main.ts"
+    "start": "node --nolazy -r ts-node/register/transpile-only src/main.ts"
   },
   "dependencies": {
     "@types/node": "^17.0.32",
