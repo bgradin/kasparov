@@ -1,12 +1,16 @@
 import Discord from "discord.js";
-import { Chess } from "../chess";
+import { Chess } from "chess.ts";
 import client from "../client";
 import { Command, DEFAULT_COMMAND_TYPE } from "../commands";
 import Function from "./function";
 
 const USER_MENTION_RX = /<@(\d+)>/;
 
-const games = {};
+interface GameStore {
+  [key: string]: Chess;
+}
+
+const games: GameStore = {};
 
 async function getUser(userId: string): Promise<Discord.User> {
   try {
@@ -64,7 +68,6 @@ export default class GameFunction implements Function {
       name: `${command.message.author.username} vs ${targetUser.username}`,
     });
 
-    // @ts-ignore
     const game = new Chess();
     games[thread.id] = game;
 

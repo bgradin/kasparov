@@ -28,6 +28,4 @@ async function registerFunctions() {
 }
 
 const server = new Server();
-server.start().then(() => {
-  server.register(new GameFunction());
-});
+server.start().then(registerFunctions);

@@ -69,9 +69,9 @@
     form-data "^3.0.0"
 
 "@types/node@*", "@types/node@^17.0.32":
-  version "17.0.32"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.32.tgz#51d59d7a90ef2d0ae961791e0900cad2393a0149"
-  integrity sha512-eAIcfAvhf/BkHcf4pkLJ7ECpBAhh9kcxRBpip9cTiO+hf+aJrsxYxBeS6OXvOd9WqNAJmavXVpZvY1rBjNsXmw==
+  version "17.0.33"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.33.tgz#3c1879b276dc63e73030bb91165e62a4509cd506"
+  integrity sha512-miWq2m2FiQZmaHfdZNcbpp9PuXg34W5JZ5CrJ/BaS70VuhoJENBEQybeiYSaPBRNq6KQGnjfEnc/F3PN++D+XQ==
 
 "@types/ws@^8.2.2":
   version "8.5.3"
@@ -100,10 +100,10 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
-chess.js@^0.13.2:
-  version "0.13.2"
-  resolved "https://registry.yarnpkg.com/chess.js/-/chess.js-0.13.2.tgz#a917667a5bc79c5de325fe7da8c479e3959b30fd"
-  integrity sha512-MVr9IfU1ZhyPMAW4BfwsgeSyB9sliREiWhpimNDZN0Q6JMmb9W0drGlUvemqheqkVGa+/FgypLv/FexUBLBTow==
+chess.ts@^0.16.2:
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/chess.ts/-/chess.ts-0.16.2.tgz#d84b422d8178644eba92720861356a9e79493fb0"
+  integrity sha512-eqTrUGxN7xLr/SHQcc7AT+Kp1aRQb1iCMn1pBXsmpU06soRH0u+HJmM/vcxKadqqvoDEazu9uFvVoZSKP2pDSg==
 
 combined-stream@^1.0.8:
   version "1.0.8"
@@ -186,6 +186,11 @@ mime-types@^2.1.12:
   integrity sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==
   dependencies:
     mime-db "1.52.0"
+
+node-fetch@2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
 
 node-fetch@^2.6.1:
   version "2.6.7"
