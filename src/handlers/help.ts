@@ -13,7 +13,7 @@ function print(command: Command, message: Message) {
           command.type
         } ${command.args.map((arg) => `<${arg.name}>`).join(" ")}`,
         fields: command.args.map((arg) => ({
-          name: arg.name,
+          name: arg.name + (arg.optional ? " (optional)" : ""),
           value: arg.description,
         })),
       },

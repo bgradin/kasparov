@@ -2,6 +2,7 @@ import { ThreadChannel } from "discord.js";
 import { Command } from "../../../commands";
 import { Message } from "../../../messages";
 import { isThreadChannel } from "../../../utils";
+import { opposite } from "../sides";
 import { GameInfo, GameStore } from "../types";
 
 interface Context {
@@ -31,10 +32,16 @@ export default class MoveCommand extends Command<Context> {
       return;
     }
 
+    if (message.author.id !== info.players[info.currentTurn].id) {
+      return;
+    }
+
     const move = message.args[0].trim();
     const moves: string[] = info.chess.moves();
     if (moves.includes(move)) {
       info.chess.move(move);
+
+      info.currentTurn = opposite(info.currentTurn);
 
       await this.context.sendState(message.channel as ThreadChannel, info);
     } else {

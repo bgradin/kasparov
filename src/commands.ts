@@ -5,6 +5,7 @@ export const COMMAND_PREFIX = "!";
 export interface CommandArg {
   name: string;
   description: string;
+  optional?: boolean;
 }
 
 export abstract class Command<T extends {} = {}> {

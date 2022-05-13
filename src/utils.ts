@@ -30,3 +30,7 @@ export function alphabeticallyBy<T>(
     return keyA < keyB ? -1 : keyA > keyB ? 1 : 0;
   };
 }
+
+export function capitalizeFirstLetter(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
