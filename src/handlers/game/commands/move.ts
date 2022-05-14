@@ -1,5 +1,5 @@
 import { ThreadChannel } from "discord.js";
-import { Command } from "../../../commands";
+import { Command, COMMAND_PREFIX } from "../../../commands";
 import { Message } from "../../../messages";
 import { isThreadChannel } from "../../../utils";
 import { save } from "../data";
@@ -67,7 +67,7 @@ export default class MoveCommand extends Command<Context> {
         await this.context.sendState(message.channel as ThreadChannel, info);
       } else {
         await message.channel.send(
-          'Invalid move! If you get stuck, try "!moves"'
+          `Invalid move! If you get stuck, try "${COMMAND_PREFIX}moves"`
         );
       }
     }
