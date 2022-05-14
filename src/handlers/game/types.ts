@@ -4,6 +4,8 @@ import { Side } from "./sides";
 
 export interface PlayerInfo {
   id: string;
+  resigned?: boolean;
+  draw?: boolean;
 }
 
 export interface PlayersInfo {

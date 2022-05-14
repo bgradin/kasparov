@@ -5,7 +5,7 @@ import { GameInfo, GameStore } from "./types";
 import ChallengeCommand from "./commands/challenge";
 import MoveCommand from "./commands/move";
 import MovesCommand from "./commands/moves";
-import { opposite } from "./sides";
+import { opposite, Side } from "./sides";
 import { load, save } from "./data";
 
 const imageGenerator = new ChessImageGenerator();
@@ -62,6 +62,18 @@ export default class GameHandler extends Handler {
     } else if (info.chess.inDraw()) {
       this.remove(info);
       return "Drawn by 50-move rule!";
+    } else if (info.players.white.draw && info.players.black.draw) {
+      this.remove(info);
+      return "Drawn by agreement!";
+    }
+
+    const sides = Object.keys(info.players) as Side[];
+    for (let i = 0; i < sides.length; i++) {
+      if (info.players[sides[i]].resigned) {
+        const winningSide = opposite(sides[i]);
+        this.remove(info);
+        return `<@${info.players[winningSide].id}> (${winningSide}) wins by resignation!`;
+      }
     }
 
     const currentPlayer = info.players[info.currentTurn];
@@ -88,6 +100,6 @@ export default class GameHandler extends Handler {
 
     info.previousMessage = await channel.send(payload);
 
-    save(info);
+    await save(info);
   }
 }

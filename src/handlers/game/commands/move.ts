@@ -2,14 +2,14 @@ import { ThreadChannel } from "discord.js";
 import { Command } from "../../../commands";
 import { Message } from "../../../messages";
 import { isThreadChannel } from "../../../utils";
-import { opposite } from "../sides";
-import { GameInfo, GameStore } from "../types";
+import { save } from "../data";
+import { opposite, Side } from "../sides";
+import { GameInfo, GameStore, PlayerInfo } from "../types";
 
 interface Context {
   games: GameStore;
   sendState: (thread: ThreadChannel, info: GameInfo) => Promise<void>;
 }
-
 export default class MoveCommand extends Command<Context> {
   type = "move";
   description = "Moves a piece in a game";
@@ -32,20 +32,44 @@ export default class MoveCommand extends Command<Context> {
       return;
     }
 
-    if (message.author.id !== info.players[info.currentTurn].id) {
-      return;
-    }
-
     const move = message.args[0].trim();
-    const moves: string[] = info.chess.moves();
-    if (moves.includes(move)) {
-      info.chess.move(move);
-
-      info.currentTurn = opposite(info.currentTurn);
+    if (move.toLowerCase() === "resign") {
+      info.players[info.currentTurn].resigned = true;
 
       await this.context.sendState(message.channel as ThreadChannel, info);
-    } else {
-      message.channel.send('Invalid move! If you get stuck, try "!moves"');
+    } else if (move.toLowerCase() === "draw") {
+      const authorSide = Object.keys(info.players).find(
+        (key) => info.players[key as Side].id === message.author.id
+      ) as Side;
+      const author = info.players[authorSide];
+      const opponent = info.players[opposite(authorSide)];
+
+      author.draw = true;
+
+      if (!opponent.draw) {
+        await this.context.sendState(message.channel as ThreadChannel, info);
+
+        await message.channel.send(
+          `<@${author.id}> offers draw. Type "draw" to accept.`
+        );
+        await save(info);
+      } else {
+        await this.context.sendState(message.channel as ThreadChannel, info);
+      }
+    } else if (message.author.id === info.players[info.currentTurn].id) {
+      const moves: string[] = info.chess.moves();
+
+      if (moves.includes(move)) {
+        info.chess.move(move);
+
+        info.currentTurn = opposite(info.currentTurn);
+
+        await this.context.sendState(message.channel as ThreadChannel, info);
+      } else {
+        await message.channel.send(
+          'Invalid move! If you get stuck, try "!moves"'
+        );
+      }
     }
   }
 }
