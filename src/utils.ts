@@ -37,3 +37,4 @@ export const readdir = promisify(fs.readdir);
 export const readfile = promisify(fs.readFile);
 export const rm = promisify(fs.rm);
 export const writefile = promisify(fs.writeFile);
+export const appendfile = promisify(fs.appendFile);
