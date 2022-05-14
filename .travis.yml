@@ -17,7 +17,7 @@ jobs:
         skip_cleanup: true
         script:
           sshpass -p ${SFTP_PASSWORD} ssh -p 2345 -oStrictHostKeyChecking=no ${SFTP_USER}@${SFTP_HOST} "mkdir -p /var/www/kasparov" &&
-          sshpass -p ${SFTP_PASSWORD} scp -P 2345 -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null * ${SFTP_USER}@${SFTP_HOST}:/var/www/kasparov &&
+          sshpass -p ${SFTP_PASSWORD} rsync -av -e 'ssh -p 2345' -oStrictHostKeyChecking=no --exclude=node_modules * ${SFTP_USER}@${SFTP_HOST}:/var/www/kasparov &&
           sshpass -p ${SFTP_PASSWORD} ssh -p 2345 -oStrictHostKeyChecking=no ${SFTP_USER}@${SFTP_HOST} "cd /var/www/kasparov && yarn && yarn restart"
         on:
           tags: true
