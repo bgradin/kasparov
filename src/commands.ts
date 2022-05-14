@@ -1,6 +1,6 @@
 import { Message } from "./messages";
 
-export const COMMAND_PREFIX = "!";
+export const COMMAND_PREFIX = "kasparov ";
 
 export interface CommandArg {
   name: string;
