@@ -37,14 +37,15 @@ function wrap(
   };
 }
 
-const yarn = wrap("yarn");
-
 async function restart() {
   await kill();
 
-  const pid = await yarn(
+  const pid = await wrap("node")(
     { detached: true, proxy: false, stdio: ["ignore", "ignore", "ignore"] },
-    "start"
+    "--nolazy",
+    "-r",
+    "ts-node/register/transpile-only",
+    "src/main.ts"
   );
   await writefile(PID_PATH, pid.toString(10), {});
 }
