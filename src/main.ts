@@ -1,12 +1,12 @@
 import "dotenv/config";
-
-import { Handlers } from "./config";
-import Server from "./server";
 import log from "./logging";
 
 process.on("uncaughtException", function (err) {
   log.error(err);
 });
+
+import { Handlers } from "./config";
+import Server from "./server";
 
 function checkEnvironmentValidity(): boolean {
   if (!process.env.APP_ID) {
