@@ -1,6 +1,9 @@
 import fs from "fs";
+import http from "http";
+import https from "https";
 import { If, GuildTextBasedChannel, TextBasedChannel } from "discord.js";
 import { promisify } from "util";
+import { RequestOptions } from "http";
 
 export const ChannelTypes = {
   GUILD: ["GUILD_TEXT", "GUILD_NEWS"],
@@ -23,6 +26,10 @@ export function isThreadChannel<Cached extends boolean = boolean>(
   return ChannelTypes.THREAD.includes(channel.type);
 }
 
+export function capitalizeFirstLetter(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 export function alphabeticallyBy<T>(
   keyFn: (obj: T) => string
 ): (a: T, b: T) => number {
@@ -38,3 +45,35 @@ export const readfile = promisify(fs.readFile);
 export const rm = promisify(fs.rm);
 export const writefile = promisify(fs.writeFile);
 export const appendfile = promisify(fs.appendFile);
+
+export async function request(
+  url: string,
+  options: RequestOptions = {},
+  data: any = undefined
+): Promise<string> {
+  const lib = url.startsWith("https://") ? https : http;
+
+  return new Promise((resolve, reject) => {
+    const req = lib.request(url, options, (res) => {
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        return reject(new Error(`Status Code: ${res.statusCode}`));
+      }
+
+      const body = [];
+
+      res.on("data", (chunk) => {
+        body.push(chunk);
+      });
+
+      res.on("end", () => resolve(Buffer.concat(body).toString("utf8")));
+    });
+
+    req.on("error", reject);
+
+    if (data) {
+      req.write(data);
+    }
+
+    req.end();
+  });
+}

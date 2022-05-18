@@ -12,9 +12,11 @@
     "kill": "node --nolazy -r ts-node/register/transpile-only src/server-admin/kill.ts"
   },
   "dependencies": {
+    "@types/cron": "^2.0.0",
     "@types/node": "^17.0.32",
     "chess-image-generator": "1.0.9",
     "chess.ts": "^0.16.2",
+    "cron": "^2.0.0",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.1",
     "nanoid": "^3.3.4",
