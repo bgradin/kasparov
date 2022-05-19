@@ -59,8 +59,8 @@ export default class MoveCommand extends Command<Context> {
     } else if (message.author.id === info.players[info.currentTurn].id) {
       const moves: string[] = info.chess.moves();
 
-      if (moves.includes(move)) {
-        info.chess.move(move);
+      if (info.chess.move(move, { dry_run: true, sloppy: true })) {
+        info.chess.move(move, { sloppy: true });
 
         info.currentTurn = opposite(info.currentTurn);
 
