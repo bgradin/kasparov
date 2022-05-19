@@ -128,7 +128,9 @@ export default class PuzzleHandler extends Handler {
         new PostDailyPuzzleCommand({
           postDailyPuzzleInChannel,
         }),
-        new SolveDailyPuzzleCommand({}),
+        new SolveDailyPuzzleCommand({
+          getDailyPuzzle,
+        }),
       ],
     };
   }

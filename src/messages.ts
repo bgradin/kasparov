@@ -11,7 +11,7 @@ export function parse(message: Discord.Message): Message {
   const body = startsWithCommandPrefix
     ? message.content.slice(COMMAND_PREFIX.length)
     : message.content;
-  const args = body.split(" ");
+  const args = body.split(/\s+/);
   const command = startsWithCommandPrefix
     ? args.shift().toLowerCase()
     : undefined;
