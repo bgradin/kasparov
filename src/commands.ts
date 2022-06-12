@@ -19,6 +19,9 @@ export abstract class Command<T extends {} = {}> {
     this.context = context;
   }
 
-  abstract canExecute(message: Message): boolean;
+  canExecute(message: Message): boolean {
+    return message.command === this.type;
+  }
+
   abstract execute(message: Message): Promise<void>;
 }
