@@ -32,6 +32,8 @@ Note: Spoiler formatting (||) will be stripped from this parameter, allowing sol
     const puzzle = await this.context.getDailyPuzzle();
     const chessFullsolution = new Chess();
     chessFullsolution.loadPgn(puzzle.game.pgn);
+    const startingMovesPlayed = chessFullsolution.history().length;
+    const solvingPlayer = chessFullsolution.turn();
 
     const chessPartialSolution = new Chess(chessFullsolution.fen());
     const chessSolution = new Chess(chessFullsolution.fen());
@@ -58,7 +60,16 @@ Note: Spoiler formatting (||) will be stripped from this parameter, allowing sol
       await message.reply(`<@${message.author.id}> got the correct solution!`);
     } else if (chessPartialSolution.fen() === chessSolution.fen()) {
       await message.react("👍");
-      await message.reply("Good so far...keep going!");
+
+      if (chessPartialSolution.turn() !== solvingPlayer) {
+        await message.reply(
+          `Good so far. ${solvingPlayer === "w" ? "Black" : "White"} plays ${
+            chessFullsolution.history()[startingMovesPlayed + solution.length]
+          }`
+        );
+      } else {
+        await message.reply("Good so far...keep going!");
+      }
     } else {
       await message.react("❌");
     }
