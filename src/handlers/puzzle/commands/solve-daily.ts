@@ -66,11 +66,9 @@ Note: Spoiler formatting (||) will be stripped from this parameter, allowing sol
 
       if (chessPartialSolution.turn() !== solvingPlayer) {
         await message.reply(
-          `Good so far. ${solvingPlayer === "w" ? "Black" : "White"} plays ${
-            hasSpoilerRegex ? "|" : ""
-          }${
+          `Good so far. ${solvingPlayer === "w" ? "Black" : "White"} plays ||${
             chessFullsolution.history()[startingMovesPlayed + solution.length]
-          }${hasSpoilerRegex ? "|" : ""}`
+          }||`
         );
       } else {
         await message.reply("Good so far...keep going!");
