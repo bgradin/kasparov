@@ -29,6 +29,9 @@ Note: Spoiler formatting (||) will be stripped from this parameter, allowing sol
       .join(" ")
       .replace(SPOILER_FORMATTING_REGEX, "")
       .split(/\s+/);
+    const hasSpoilerRegex = SPOILER_FORMATTING_REGEX.test(
+      message.args.join(" ")
+    );
     const puzzle = await this.context.getDailyPuzzle();
     const chessFullsolution = new Chess();
     chessFullsolution.loadPgn(puzzle.game.pgn);
@@ -64,8 +67,10 @@ Note: Spoiler formatting (||) will be stripped from this parameter, allowing sol
       if (chessPartialSolution.turn() !== solvingPlayer) {
         await message.reply(
           `Good so far. ${solvingPlayer === "w" ? "Black" : "White"} plays ${
+            hasSpoilerRegex ? "|" : ""
+          }${
             chessFullsolution.history()[startingMovesPlayed + solution.length]
-          }`
+          }${hasSpoilerRegex ? "|" : ""}`
         );
       } else {
         await message.reply("Good so far...keep going!");
