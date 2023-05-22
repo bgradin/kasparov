@@ -6,7 +6,7 @@ import { LichessDailyPuzzle } from "../types";
 const SPOILER_FORMATTING_REGEX = /\|\|/g;
 
 interface Context {
-  getDailyPuzzle: () => Promise<LichessDailyPuzzle>;
+  getDailyPuzzle: () => Promise<LichessDailyPuzzle | undefined>;
 }
 
 export default class SolveDailyPuzzleCommand extends Command<Context> {
@@ -25,6 +25,10 @@ Note: Spoiler formatting (||) will be stripped from this parameter, allowing sol
   }
 
   async execute(message: Message) {
+    if (!this.context) {
+      return;
+    }
+
     const solution = message.args
       .join(" ")
       .replace(SPOILER_FORMATTING_REGEX, "")
@@ -33,6 +37,10 @@ Note: Spoiler formatting (||) will be stripped from this parameter, allowing sol
       message.args.join(" ")
     );
     const puzzle = await this.context.getDailyPuzzle();
+    if (!puzzle) {
+      return;
+    }
+
     const chessFullsolution = new Chess();
     chessFullsolution.loadPgn(puzzle.game.pgn);
     const startingMovesPlayed = chessFullsolution.history().length;

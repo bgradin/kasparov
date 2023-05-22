@@ -23,7 +23,7 @@ export default class MoveCommand extends Command<Context> {
   }
 
   async execute(message: Message) {
-    if (message.args.length < 1) {
+    if (!this.context || message.args.length < 1) {
       return;
     }
 

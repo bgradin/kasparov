@@ -12,11 +12,9 @@ export function parse(message: Discord.Message): Message {
     ? message.content.slice(COMMAND_PREFIX.length)
     : message.content;
   const args = body.split(/\s+/);
-  const command = startsWithCommandPrefix
-    ? args.shift().toLowerCase()
-    : undefined;
+  const command = startsWithCommandPrefix ? args.shift() : undefined;
   return Object.assign(message, {
-    command,
+    command: command ? command.toLowerCase() : undefined,
     args,
   });
 }

@@ -8,17 +8,23 @@ interface WrapOptions extends SpawnOptions {
 
 function wrap(
   executable: string
-): (options?: WrapOptions, ...args: string[]) => Promise<number> {
-  return (inputOptions?: WrapOptions, ...args: string[]): Promise<number> => {
+): (options?: WrapOptions, ...args: string[]) => Promise<number | undefined> {
+  return (
+    inputOptions?: WrapOptions,
+    ...args: string[]
+  ): Promise<number | undefined> => {
     const options = Object.assign({ proxy: true }, inputOptions);
 
     const proc = spawn(executable, args, options);
+    if (!proc.pid) {
+      throw new Error("Process spawn failed!");
+    }
 
     if (options.detached) {
       proc.unref();
     }
 
-    if (options.proxy) {
+    if (options.proxy && proc.stdout && proc.stderr) {
       proc.stdout.on("data", process.stdout.write);
       proc.stderr.on("data", process.stderr.write);
     }
@@ -28,9 +34,9 @@ function wrap(
       : new Promise((resolve, reject) => {
           proc.on("exit", (code) => {
             if (code) {
-              reject(code);
+              reject();
             } else {
-              resolve(code);
+              resolve(undefined);
             }
           });
         });
@@ -47,7 +53,9 @@ async function restart() {
     "ts-node/register/transpile-only",
     "src/main.ts"
   );
-  await writefile(PID_PATH, pid.toString(10), {});
+  if (pid) {
+    await writefile(PID_PATH, pid.toString(10), {});
+  }
 }
 
 restart();

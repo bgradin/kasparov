@@ -60,7 +60,7 @@ export default class ChallengeCommand extends Command<Context> {
   }
 
   async execute(message: Message) {
-    if (message.args.length === 0) {
+    if (!this.context || message.args.length === 0) {
       return;
     }
 
@@ -69,7 +69,7 @@ export default class ChallengeCommand extends Command<Context> {
     }
 
     const targetUserRx = message.args[0].match(Regex.USER_MENTION);
-    if (targetUserRx.length < 2) {
+    if (!targetUserRx || targetUserRx.length < 2) {
       return;
     }
 

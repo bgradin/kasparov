@@ -1,7 +1,7 @@
 import { Chess } from "chess.ts";
 import ChessImageGenerator from "chess-image-generator";
 import { CronJob } from "cron";
-import { MessageOptions, NewsChannel, TextChannel } from "discord.js";
+import { BaseMessageOptions, NewsChannel, TextChannel } from "discord.js";
 import { request } from "../../utils";
 import { Handler, HandlerInfo } from "../handler";
 import { client } from "../../client";
@@ -13,7 +13,7 @@ const LICHESS_PUZZLE_API_ENDPOINT = "https://lichess.org/api/puzzle/daily";
 
 const chessImageGenerator = new ChessImageGenerator();
 
-async function getDailyPuzzle(): Promise<LichessDailyPuzzle> {
+async function getDailyPuzzle(): Promise<LichessDailyPuzzle | undefined> {
   const response = await request(LICHESS_PUZZLE_API_ENDPOINT);
   const json = JSON.parse(response);
   if (
@@ -36,18 +36,29 @@ async function findPublicChessTextChannels(): Promise<
 
   const guilds = await client.guilds.fetch();
   for (let i = 0; i < guilds.size; i++) {
-    const guild = await guilds.at(i).fetch();
-    const channels = await guild.channels.fetch();
+    const guild = guilds.at(i);
+    if (!guild) {
+      continue;
+    }
+
+    const channels = await (await guild.fetch()).channels.fetch();
     for (let j = 0; j < channels.size; j++) {
       const channel = channels.at(j);
-      if (channel.name.toLowerCase() !== "chess" || !channel.isText()) {
+      if (
+        !channel ||
+        !client.user ||
+        channel.name.toLowerCase() !== "chess" ||
+        !channel.isTextBased() ||
+        channel.isVoiceBased()
+      ) {
         continue;
       }
 
       const permissions = channel.permissionsFor(client.user);
       if (
-        !permissions.has("SEND_MESSAGES") ||
-        !permissions.has("VIEW_CHANNEL")
+        !permissions ||
+        !permissions.has("SendMessages") ||
+        !permissions.has("ViewChannel")
       ) {
         continue;
       }
@@ -65,7 +76,7 @@ function formatPlayer(player: LichessPlayerInfo): string {
 
 async function formatPuzzleAsDiscordMessage(
   puzzle: LichessDailyPuzzle
-): Promise<MessageOptions> {
+): Promise<BaseMessageOptions> {
   const chess = new Chess();
   chess.loadPgn(puzzle.game.pgn);
 
@@ -95,17 +106,25 @@ async function formatPuzzleAsDiscordMessage(
   };
 }
 
-async function getDailyPuzzleMessage(): Promise<MessageOptions> {
+async function getDailyPuzzleMessage(): Promise<
+  BaseMessageOptions | undefined
+> {
   const puzzle = await getDailyPuzzle();
-  return await formatPuzzleAsDiscordMessage(puzzle);
+  return puzzle ? await formatPuzzleAsDiscordMessage(puzzle) : undefined;
 }
 
 async function postDailyPuzzleInChannel(channel: NewsChannel | TextChannel) {
-  await channel.send(await getDailyPuzzleMessage());
+  const message = await getDailyPuzzleMessage();
+  if (message) {
+    await channel.send(message);
+  }
 }
 
 async function postDailyPuzzleInAllChannels() {
   const message = await getDailyPuzzleMessage();
+  if (!message) {
+    return;
+  }
 
   const channels = await findPublicChessTextChannels();
   for (let i = 0; i < channels.length; i++) {

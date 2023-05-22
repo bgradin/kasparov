@@ -1,4 +1,4 @@
-import { NewsChannel, TextChannel } from "discord.js";
+import { ChannelType, NewsChannel, TextChannel } from "discord.js";
 import { Command } from "../../../commands";
 import { Message } from "../../../messages";
 
@@ -14,12 +14,16 @@ export default class PostPuzzleCommand extends Command<Context> {
   canExecute(message: Message): boolean {
     return (
       message.command === this.type &&
-      (message.channel.type === "GUILD_NEWS" ||
-        message.channel.type === "GUILD_TEXT")
+      (message.channel.type === ChannelType.GuildAnnouncement ||
+        message.channel.type === ChannelType.GuildText)
     );
   }
 
   async execute(message: Message): Promise<void> {
+    if (!this.context) {
+      return;
+    }
+
     await this.context.postDailyPuzzleInChannel(
       message.channel as NewsChannel | TextChannel
     );

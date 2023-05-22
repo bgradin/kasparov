@@ -38,7 +38,10 @@ export default class Server {
     const guilds = await client.guilds.fetch();
     this._guilds = [];
     for (let i = 0; i < guilds.size; i++) {
-      this._guilds.push(await guilds.at(i).fetch());
+      const guild = guilds.at(i);
+      if (guild) {
+        this._guilds.push(await guild.fetch());
+      }
     }
   }
 }

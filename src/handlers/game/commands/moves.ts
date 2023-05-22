@@ -17,6 +17,10 @@ export default class MovesCommand extends Command<Context> {
   }
 
   async execute(message: Message) {
+    if (!this.context) {
+      return;
+    }
+
     const info = this.context.games[message.channel.id];
     if (!info) {
       return;

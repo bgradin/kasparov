@@ -1,13 +1,22 @@
 import fs from "fs";
 import http from "http";
 import https from "https";
-import { If, GuildTextBasedChannel, TextBasedChannel } from "discord.js";
+import {
+  If,
+  GuildTextBasedChannel,
+  TextBasedChannel,
+  ChannelType,
+} from "discord.js";
 import { promisify } from "util";
 import { RequestOptions } from "http";
 
 export const ChannelTypes = {
-  GUILD: ["GUILD_TEXT", "GUILD_NEWS"],
-  THREAD: ["GUILD_PUBLIC_THREAD", "GUILD_PRIVATE_THREAD", "GUILD_NEWS_THREAD"],
+  GUILD: [ChannelType.GuildText, ChannelType.GuildAnnouncement],
+  THREAD: [
+    ChannelType.PublicThread,
+    ChannelType.PrivateThread,
+    ChannelType.AnnouncementThread,
+  ],
 };
 
 export const Regex = {
@@ -55,11 +64,11 @@ export async function request(
 
   return new Promise((resolve, reject) => {
     const req = lib.request(url, options, (res) => {
-      if (res.statusCode < 200 || res.statusCode >= 300) {
+      if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) {
         return reject(new Error(`Status Code: ${res.statusCode}`));
       }
 
-      const body = [];
+      const body: Uint8Array[] = [];
 
       res.on("data", (chunk) => {
         body.push(chunk);
