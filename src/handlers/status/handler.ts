@@ -28,7 +28,6 @@ async function findPublicChessTextChannels(): Promise<
       if (
         !channel ||
         !client.user ||
-        channel.name.toLowerCase() !== "chess" ||
         !channel.isTextBased() ||
         channel.isVoiceBased()
       ) {
