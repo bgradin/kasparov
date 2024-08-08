@@ -20,7 +20,7 @@ export default class StatusCommand extends Command<Context> {
     }
 
     await this.context.postStatusInAllChannels(
-      "The reports of my death are greatly exaggerated. Just didn't feel like it lately 🤷"
+      "The reports of my death are greatly exaggerated. Just didn't feel like posting lately 🤷"
     );
   }
 }
