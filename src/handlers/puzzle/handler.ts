@@ -48,8 +48,7 @@ async function findPublicChessTextChannels(): Promise<
         !channel ||
         !client.user ||
         channel.name.toLowerCase() !== "chess" ||
-        !channel.isTextBased() ||
-        channel.isVoiceBased()
+        (typeof channel.isTextBased === "function" && !channel.isTextBased())
       ) {
         continue;
       }
@@ -57,13 +56,13 @@ async function findPublicChessTextChannels(): Promise<
       const permissions = channel.permissionsFor(client.user);
       if (
         !permissions ||
-        !permissions.has("SendMessages") ||
-        !permissions.has("ViewChannel")
+        !permissions.has(1n << 11n) ||
+        !permissions.has(1n << 10n)
       ) {
         continue;
       }
 
-      result.push(channel);
+      result.push(channel as TextChannel);
     }
   }
 

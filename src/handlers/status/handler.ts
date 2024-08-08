@@ -1,12 +1,13 @@
-import { NewsChannel, TextChannel } from "discord.js";
+import { Message, NewsChannel, TextChannel } from "discord.js";
 import { Handler, HandlerInfo } from "../handler";
 import { client } from "../../client";
 import StatusCommand from "./commands/status";
 
 async function postStatusInAllChannels(status: string) {
   const channels = await findPublicChessTextChannels();
+
   for (let i = 0; i < channels.length; i++) {
-    channels[i].send(status);
+    await channels[i].send(status);
   }
 }
 
@@ -28,8 +29,8 @@ async function findPublicChessTextChannels(): Promise<
       if (
         !channel ||
         !client.user ||
-        !channel.isTextBased() ||
-        channel.isVoiceBased()
+        channel.name.toLowerCase() !== "chess" ||
+        (typeof channel.isTextBased === "function" && !channel.isTextBased())
       ) {
         continue;
       }
@@ -37,13 +38,13 @@ async function findPublicChessTextChannels(): Promise<
       const permissions = channel.permissionsFor(client.user);
       if (
         !permissions ||
-        !permissions.has("SendMessages") ||
-        !permissions.has("ViewChannel")
+        !permissions.has(1n << 11n) ||
+        !permissions.has(1n << 10n)
       ) {
         continue;
       }
 
-      result.push(channel);
+      result.push(channel as TextChannel);
     }
   }
 

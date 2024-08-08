@@ -14,7 +14,7 @@ export default class StatusCommand extends Command<Context> {
     return message.command === this.type;
   }
 
-  async execute(): Promise<void> {
+  async execute(message: Message): Promise<void> {
     if (!this.context) {
       return;
     }
