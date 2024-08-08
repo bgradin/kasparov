@@ -6,7 +6,7 @@ interface Context {
   postStatusInAllChannels: (status: string) => {};
 }
 
-export default class PostPuzzleCommand extends Command<Context> {
+export default class StatusCommand extends Command<Context> {
   type = "status";
   description = "Kasparov status";
   args = [];
@@ -19,7 +19,7 @@ export default class PostPuzzleCommand extends Command<Context> {
     );
   }
 
-  async execute(message: Message): Promise<void> {
+  async execute(): Promise<void> {
     if (!this.context) {
       return;
     }
